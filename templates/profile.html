@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile</title>
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.14.0/maps/maps-web.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.14.0/maps/maps.css">
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome, {{ name }}!</h1>
+    <div id="map"></div>
+    <form method="post" action="{{ url_for('nearest_park') }}">
+        Latitude: <input type="text" name="latitude"><br>
+        Longitude: <input type="text" name="longitude"><br>
+        <input type="submit" value="Find Nearest Park">
+    </form>
+    <a href="{{ url_for('logout') }}">Logout</a>
+
+    <script>
+        var map = tt.map({
+            key: 'YOUR_TOMTOM_API_KEY',  // Replace with your actual TomTom API key
+            container: 'map',
+            center: [37.7749, -122.4194],  // Default center coordinates
+            zoom: 12
+        });
+
+        function addMarker(lat, lon, title, color) {
+            var marker = new tt.Marker({
+                color: color
+            }).setLngLat([lon, lat])
+              .setPopup(new tt.Popup({offset: 35}).setText(title))
+              .addTo(map);
+        }
+
+        // Add user location marker
+        addMarker(37.7749, -122.4194, "You are here", "red");
+
+        {% if park %}
+            // Add park location marker if available
+            addMarker({{ park.latitude }}, {{ park.longitude }}, "{{ park.name }}", "green");
+        {% endif %}
+    </script>
+</body>
+</html>
